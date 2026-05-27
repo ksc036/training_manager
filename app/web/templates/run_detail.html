@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ detail.summary.run_name }}</h1>
+{% if created_message %}
+<p>{{ created_message }}</p>
+{% endif %}
+<p>{{ detail.summary.model_name }} / {{ detail.summary.encoder_name }}</p>
+<p>
+  Dataset {{ detail.dataset_label }},
+  backend {{ detail.summary.trainer_backend }},
+  epochs {{ detail.summary.epochs }},
+  status {{ detail.summary.status }}
+</p>
+
+<section>
+  <h2>Metrics</h2>
+  {% if detail.metrics %}
+  <ul>
+    {% for metric in detail.metrics %}
+    <li>Epoch {{ metric.epoch }} - dice {{ metric.dice }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No metrics recorded yet.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Actions</h2>
+  <form method="post" action="/runs/{{ detail.summary.run_name }}/retry">
+    <button type="submit">Retry Run</button>
+  </form>
+  <form method="post" action="/runs/{{ detail.summary.run_name }}/stop">
+    <button type="submit">Stop Run</button>
+  </form>
+  <p>
+    <a href="/runs/{{ detail.summary.run_name }}/artifacts/config">Config</a>
+    <a href="/runs/{{ detail.summary.run_name }}/artifacts/metrics">Metrics</a>
+    <a href="/runs/{{ detail.summary.run_name }}/artifacts/log">Log</a>
+    <a href="/runs/{{ detail.summary.run_name }}/artifacts/checkpoint">Checkpoint</a>
+  </p>
+</section>
+
+<section>
+  <h2>Log</h2>
+  {% if detail.log_text %}
+  <pre>{{ detail.log_text }}</pre>
+  {% else %}
+  <p>No log output yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

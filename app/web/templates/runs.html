@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Runs</h1>
+<p>Monitor queued, running, completed, failed, and stopped training runs.</p>
+<form method="get" action="/runs">
+  <label for="run_name_query">Run name</label>
+  <input id="run_name_query" name="run_name_query" type="text" value="{{ run_name_query or '' }}" />
+  <label for="status">Status</label>
+  <select id="status" name="status">
+    <option value="">All</option>
+    {% for status in statuses %}
+    <option value="{{ status }}"{% if selected_status == status %} selected{% endif %}>{{ status }}</option>
+    {% endfor %}
+  </select>
+  <label for="model_name">Model</label>
+  <select id="model_name" name="model_name">
+    <option value="">All</option>
+    {% for model in models %}
+    <option value="{{ model.key }}"{% if selected_model_name == model.key %} selected{% endif %}>{{ model.key }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Apply Filters</button>
+</form>
+{% if runs %}
+<ul>
+  {% for run in runs %}
+  <li>
+    <a href="/runs/{{ run.run_name }}">{{ run.run_name }}</a> - {{ run.model_name }} / {{ run.encoder_name }}
+    (dataset {{ run.dataset_version_id }}, backend {{ run.trainer_backend }}, epochs {{ run.epochs }}, status {{ run.status }})
+  </li>
+  {% endfor %}
+</ul>
+<p>Page {{ page }} of {{ total_pages }}</p>
+{% if prev_page_link %}
+<a href="{{ prev_page_link }}">Previous</a>
+{% endif %}
+{% if next_page_link %}
+<a href="{{ next_page_link }}">Next</a>
+{% endif %}
+{% else %}
+<p>No runs yet.</p>
+{% endif %}
+{% endblock %}

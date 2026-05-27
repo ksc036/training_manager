@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Train</h1>
+<p>Select a pre-registered model to configure a training run.</p>
+{% if created_message %}
+<p>{{ created_message }}</p>
+{% endif %}
+{% if error_message %}
+<p>{{ error_message }}</p>
+{% endif %}
+<section>
+  <h2>Available Dataset Versions</h2>
+  <ul>
+    {% for dataset in dataset_versions %}
+    <li>{{ dataset.name }} {{ dataset.version }} ({{ dataset.sample_count }} sample(s))</li>
+    {% endfor %}
+  </ul>
+</section>
+<ul>
+  {% for model in models %}
+  <li>{{ model.display_name }} ({{ model.key }}) - backend: {{ model.trainer_backend }}, default encoder: {{ model.default_encoder }}</li>
+  {% endfor %}
+</ul>
+<section>
+  <h2>Start Run</h2>
+  {% if dataset_versions %}
+  <form method="post" action="/train">
+    <label for="dataset_version_id">Dataset version</label>
+    <select id="dataset_version_id" name="dataset_version_id">
+      {% for dataset in dataset_versions %}
+      <option value="{{ dataset.id }}">{{ dataset.name }} {{ dataset.version }}</option>
+      {% endfor %}
+    </select>
+    <label for="model_name">Model</label>
+    <select id="model_name" name="model_name">
+      {% for model in models %}
+      <option value="{{ model.key }}">{{ model.display_name }}</option>
+      {% endfor %}
+    </select>
+    <label for="epochs">Epochs</label>
+    <input id="epochs" name="epochs" type="number" value="5" min="1" />
+    <label for="batch_size">Batch size</label>
+    <input id="batch_size" name="batch_size" type="number" value="2" min="1" />
+    <label for="learning_rate">Learning rate</label>
+    <input id="learning_rate" name="learning_rate" type="text" value="0.001" />
+    <button type="submit">Start Training Run</button>
+  </form>
+  {% else %}
+  <p>Create at least one dataset version before starting a training run.</p>
+  {% endif %}
+</section>
+{% endblock %}

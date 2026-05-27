@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title or "Training Manager" }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <nav>
+      <a href="/datasets">Datasets</a>
+      <a href="/train">Train</a>
+      <a href="/runs">Runs</a>
+      <a href="/compare">Compare</a>
+    </nav>
+    <main>
+      {% block content %}
+      <h1>Training Manager</h1>
+      {% endblock %}
+    </main>
+  </body>
+</html>

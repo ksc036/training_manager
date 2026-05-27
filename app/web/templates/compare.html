@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Compare</h1>
+<p>Compare completed runs by dataset version and model performance.</p>
+<form method="get" action="/compare">
+  <label for="run_name_query">Run name</label>
+  <input id="run_name_query" name="run_name_query" type="text" value="{{ run_name_query or '' }}" />
+  <label for="model_name">Model</label>
+  <select id="model_name" name="model_name">
+    <option value="">All</option>
+    {% for model in models %}
+    <option value="{{ model.key }}"{% if selected_model_name == model.key %} selected{% endif %}>{{ model.key }}</option>
+    {% endfor %}
+  </select>
+  <label for="sort">Sort</label>
+  <select id="sort" name="sort">
+    <option value="best_dice_desc"{% if selected_sort == "best_dice_desc" %} selected{% endif %}>Best Dice Desc</option>
+    <option value="best_dice_asc"{% if selected_sort == "best_dice_asc" %} selected{% endif %}>Best Dice Asc</option>
+  </select>
+  <button type="submit">Apply Filters</button>
+</form>
+{% if runs %}
+<ul>
+  {% for run in runs %}
+  <li>
+    {{ run.run_name }} - {{ run.model_name }} / {{ run.encoder_name }}
+    ({{ run.dataset_label }}, best dice {{ run.best_dice }})
+  </li>
+  {% endfor %}
+</ul>
+<p>Page {{ page }} of {{ total_pages }}</p>
+{% if prev_page_link %}
+<a href="{{ prev_page_link }}">Previous</a>
+{% endif %}
+{% if next_page_link %}
+<a href="{{ next_page_link }}">Next</a>
+{% endif %}
+{% else %}
+<p>No comparable runs yet.</p>
+{% endif %}
+{% endblock %}

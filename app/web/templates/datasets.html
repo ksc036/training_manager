@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Datasets</h1>
+<p>Scan approved samples and create dataset versions.</p>
+{% if created_message %}
+<p>{{ created_message }}</p>
+{% endif %}
+{% if error_message %}
+<p>{{ error_message }}</p>
+{% endif %}
+{% if issues %}
+<section>
+  <h2>Scan Issues</h2>
+  <ul>
+    {% for issue in issues %}
+    <li>{{ issue }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+<section>
+  <h2>Approved Samples</h2>
+  <form method="post" action="/datasets">
+    <label for="name">Dataset name</label>
+    <input id="name" name="name" type="text" value="baseline" />
+    <ul>
+      {% for sample in samples %}
+      <li>
+        <label>
+          <input type="checkbox" name="sample_id" value="{{ sample.sample_id }}" />
+          {{ sample.sample_id }}
+        </label>
+      </li>
+      {% endfor %}
+    </ul>
+    <button type="submit">Create Dataset Version</button>
+  </form>
+</section>
+{% endblock %}
