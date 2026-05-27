@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 
 import pytest
+import torch
 from PIL import Image
 
 from app.db import get_session_factory
@@ -276,14 +277,18 @@ def test_external_adapter_runs_actual_torch_training_on_valid_images(
 
     run_dir = Path(run.run_dir)
     metrics_lines = (run_dir / "metrics.csv").read_text(encoding="utf-8").splitlines()
-    checkpoint_payload = json.loads(
-        (run_dir / "checkpoints" / "best.ckpt").read_text(encoding="utf-8")
+    checkpoint_payload = torch.load(
+        run_dir / "checkpoints" / "best.ckpt",
+        map_location="cpu",
     )
 
     assert metrics_lines[0] == "epoch,train_loss,val_loss,dice,iou,precision,recall"
     assert len(metrics_lines) == 3
-    assert checkpoint_payload["best_epoch"] in (1, 2)
+    assert checkpoint_payload["epoch"] in (1, 2)
     assert checkpoint_payload["best_dice"] >= 0.0
+    assert checkpoint_payload["model_name"] == "external-script-model"
+    assert checkpoint_payload["model_state_dict"]
+    assert checkpoint_payload["optimizer_state_dict"]
 
 
 def test_stop_run_marks_async_run_as_stopped(tmp_path: Path, monkeypatch) -> None:

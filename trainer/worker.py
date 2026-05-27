@@ -93,14 +93,24 @@ def _persist_metric_full(
         session.commit()
 
 
-def _persist_best_checkpoint(run_dir: Path, epoch: int, dice: float) -> None:
+def _persist_best_checkpoint(
+    run_dir: Path,
+    epoch: int,
+    dice: float,
+    checkpoint_payload: object | None = None,
+) -> None:
     checkpoints_dir = run_dir / "checkpoints"
     checkpoints_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_path = checkpoints_dir / "best.ckpt"
-    checkpoint_path.write_text(
-        json.dumps({"best_epoch": epoch, "best_dice": dice}, indent=2),
-        encoding="utf-8",
-    )
+    if checkpoint_payload is None:
+        checkpoint_path.write_text(
+            json.dumps({"best_epoch": epoch, "best_dice": dice}, indent=2),
+            encoding="utf-8",
+        )
+    else:
+        import torch
+
+        torch.save(checkpoint_payload, checkpoint_path)
     session_factory = get_session_factory(_project_root_from_run_dir(run_dir))
     with session_factory() as session:
         update_training_run_checkpoint(

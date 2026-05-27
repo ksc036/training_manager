@@ -322,7 +322,19 @@ def _run_actual_training(run_dir: Path) -> None:
             if dice >= best_dice:
                 best_dice = dice
                 best_epoch = epoch
-                _persist_best_checkpoint(run_dir, epoch=best_epoch, dice=best_dice)
+                _persist_best_checkpoint(
+                    run_dir,
+                    epoch=best_epoch,
+                    dice=best_dice,
+                    checkpoint_payload={
+                        "epoch": best_epoch,
+                        "best_dice": float(best_dice),
+                        "model_name": model_name,
+                        "encoder_name": str(config.get("encoder_name", "")),
+                        "model_state_dict": model.state_dict(),
+                        "optimizer_state_dict": optimizer.state_dict(),
+                    },
+                )
             with log_path.open("a", encoding="utf-8") as log_handle:
                 log_handle.write(
                     f"epoch {epoch}: train_loss={train_loss:.4f} val_loss={val_loss:.4f} dice={dice:.4f}\n"
