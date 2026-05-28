@@ -12,6 +12,7 @@ from PIL import Image
 
 from app.services.datasets import DatasetRegistryService
 from app.services.runs import RunService
+from trainer.device import resolve_torch_device
 from trainer.model_zoo import build_segmentation_model
 
 
@@ -101,7 +102,8 @@ class TestInferenceService:
             weights_only=False,
         )
 
-        model = build_segmentation_model(run.model_name)
+        device = resolve_torch_device()
+        model = build_segmentation_model(run.model_name).to(device)
         model.load_state_dict(checkpoint["model_state_dict"], strict=False)
         model.eval()
 
@@ -109,7 +111,7 @@ class TestInferenceService:
         ground_truth = Image.open(sample.mask_path).convert("L")
         resized = original.resize((64, 64))
         array = np.asarray(resized, dtype=np.float32) / 255.0
-        tensor = torch.from_numpy(array.transpose(2, 0, 1)).unsqueeze(0)
+        tensor = torch.from_numpy(array.transpose(2, 0, 1)).unsqueeze(0).to(device)
 
         with torch.no_grad():
             logits = model(tensor)

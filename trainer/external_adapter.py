@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from app.services.datasets import DatasetRegistryService
+from trainer.device import describe_torch_device, resolve_torch_device
 from trainer.model_zoo import build_segmentation_model
 from trainer.worker import (
     _persist_best_checkpoint,
@@ -231,7 +232,8 @@ def _run_actual_training(run_dir: Path) -> None:
     train_loader = DataLoader(WorkspaceDataset(train_samples), batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(WorkspaceDataset(val_samples), batch_size=batch_size, shuffle=False)
 
-    model = build_segmentation_model(model_name)
+    device = resolve_torch_device()
+    model = build_segmentation_model(model_name).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.BCEWithLogitsLoss()
 
@@ -239,7 +241,10 @@ def _run_actual_training(run_dir: Path) -> None:
     log_path = run_dir / "train.log"
     _persist_status(run_dir, "running")
     log_path.write_text(
-        f"starting actual torch training with model={model_name}\n",
+        (
+            f"starting actual torch training with model={model_name}\n"
+            f"device={describe_torch_device(device)}\n"
+        ),
         encoding="utf-8",
     )
 
@@ -265,6 +270,8 @@ def _run_actual_training(run_dir: Path) -> None:
             train_loss_total = 0.0
             train_batches = 0
             for images, masks in train_loader:
+                images = images.to(device)
+                masks = masks.to(device)
                 optimizer.zero_grad()
                 logits = model(images)
                 loss = criterion(logits, masks)
@@ -283,6 +290,8 @@ def _run_actual_training(run_dir: Path) -> None:
             recall_total = 0.0
             with torch.no_grad():
                 for images, masks in val_loader:
+                    images = images.to(device)
+                    masks = masks.to(device)
                     logits = model(images)
                     loss = criterion(logits, masks)
                     val_loss_total += float(loss.item())
