@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Test</h1>
+<p>Load a completed run checkpoint and compare original, ground truth, prediction, and overlay for one sample.</p>
+
+{% if error_message %}
+<p>{{ error_message }}</p>
+{% endif %}
+
+<section>
+  <h2>Select Run</h2>
+  <form method="get" action="/test">
+    <label for="run_name">Run</label>
+    <select id="run_name" name="run_name">
+      <option value="">Choose a run</option>
+      {% for run in runs %}
+      <option value="{{ run.run_name }}" {% if run.run_name == selected_run_name %}selected{% endif %}>
+        {{ run.run_name }} / {{ run.model_name }}
+      </option>
+      {% endfor %}
+    </select>
+    <button type="submit">Load Samples</button>
+  </form>
+</section>
+
+{% if selected_run_name %}
+<section>
+  <h2>Select Sample</h2>
+  <form method="post" action="/test">
+    <input type="hidden" name="run_name" value="{{ selected_run_name }}">
+    <label for="sample_id">Sample</label>
+    <select id="sample_id" name="sample_id">
+      <option value="">Choose a sample</option>
+      {% for sample in samples %}
+      <option value="{{ sample.sample_id }}" {% if sample.sample_id == selected_sample_id %}selected{% endif %}>
+        {{ sample.sample_id }}
+      </option>
+      {% endfor %}
+    </select>
+    <button type="submit">Run Test</button>
+  </form>
+</section>
+{% endif %}
+
+{% if result %}
+<section>
+  <h2>Result</h2>
+  <p>
+    run {{ result.run_name }},
+    model {{ result.model_name }},
+    encoder {{ result.encoder_name }},
+    dataset {{ result.dataset_label }},
+    sample {{ result.sample_id }}
+  </p>
+  <p>checkpoint {{ result.checkpoint_path }}</p>
+  <div class="preview-grid">
+    <figure>
+      <figcaption>Original</figcaption>
+      <img src="{{ result.original_data_url }}" alt="Original">
+    </figure>
+    <figure>
+      <figcaption>Ground Truth</figcaption>
+      <img src="{{ result.ground_truth_data_url }}" alt="Ground Truth">
+    </figure>
+    <figure>
+      <figcaption>Prediction</figcaption>
+      <img src="{{ result.prediction_data_url }}" alt="Prediction">
+    </figure>
+    <figure>
+      <figcaption>Overlay</figcaption>
+      <img src="{{ result.overlay_data_url }}" alt="Overlay">
+    </figure>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

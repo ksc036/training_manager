@@ -23,11 +23,15 @@
   <form method="post" action="/datasets">
     <label for="name">Dataset name</label>
     <input id="name" name="name" type="text" value="baseline" />
+    <label>
+      <input id="select_all_samples" type="checkbox" />
+      Select all
+    </label>
     <ul>
       {% for sample in samples %}
       <li>
         <label>
-          <input type="checkbox" name="sample_id" value="{{ sample.sample_id }}" />
+          <input class="sample-checkbox" type="checkbox" name="sample_id" value="{{ sample.sample_id }}" />
           {{ sample.sample_id }}
         </label>
       </li>
@@ -36,4 +40,15 @@
     <button type="submit">Create Dataset Version</button>
   </form>
 </section>
+<script>
+  const selectAllSamples = document.getElementById("select_all_samples");
+  const sampleCheckboxes = document.querySelectorAll(".sample-checkbox");
+  if (selectAllSamples) {
+    selectAllSamples.addEventListener("change", () => {
+      sampleCheckboxes.forEach((checkbox) => {
+        checkbox.checked = selectAllSamples.checked;
+      });
+    });
+  }
+</script>
 {% endblock %}

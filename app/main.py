@@ -11,6 +11,7 @@ from app.db import init_database
 from app.web.routes_compare import router as compare_router
 from app.web.routes_datasets import router as datasets_router
 from app.web.routes_runs import router as runs_router
+from app.web.routes_test import router as test_router
 from app.web.routes_train import router as train_router
 
 
@@ -32,6 +33,7 @@ def create_app(
     app.include_router(train_router)
     app.include_router(runs_router)
     app.include_router(compare_router)
+    app.include_router(test_router)
     app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "app" / "web" / "static"), name="static")
 
     return app

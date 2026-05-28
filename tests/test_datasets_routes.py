@@ -22,6 +22,7 @@ def test_datasets_page_renders_from_non_repo_cwd(
     assert response.status_code == 200
     assert "Datasets" in response.text
     assert "sample_a" in response.text
+    assert 'id="select_all_samples"' in response.text
 
 
 def test_datasets_page_creates_dataset_manifest(tmp_path) -> None:

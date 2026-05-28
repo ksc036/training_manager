@@ -3,3 +3,55 @@ body {
   margin: 0;
   padding: 2rem;
 }
+
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+main {
+  max-width: 1200px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+select,
+button {
+  font: inherit;
+  padding: 0.45rem 0.7rem;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.preview-grid figure {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.preview-grid figcaption {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.preview-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: white;
+}
