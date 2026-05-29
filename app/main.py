@@ -8,7 +8,13 @@ from fastapi.staticfiles import StaticFiles
 from app.bootstrap import ensure_runtime_dirs
 from app.config import APPROVED_SOURCE_ROOT, PROJECT_ROOT
 from app.db import init_database
+from app.api.routes_compare import router as compare_api_router
+from app.api.routes_datasets import router as datasets_api_router
+from app.api.routes_models import router as models_api_router
+from app.api.routes_runs import router as runs_api_router
+from app.api.routes_test import router as test_api_router
 from app.web.routes_compare import router as compare_router
+from app.web.routes_dashboard import router as dashboard_router
 from app.web.routes_datasets import router as datasets_router
 from app.web.routes_runs import router as runs_router
 from app.web.routes_test import router as test_router
@@ -29,6 +35,12 @@ def create_app(
     app = FastAPI(title="Training Manager", lifespan=lifespan)
     app.state.project_root = project_root
     app.state.approved_source_root = approved_source_root
+    app.include_router(datasets_api_router)
+    app.include_router(models_api_router)
+    app.include_router(runs_api_router)
+    app.include_router(compare_api_router)
+    app.include_router(test_api_router)
+    app.include_router(dashboard_router)
     app.include_router(datasets_router)
     app.include_router(train_router)
     app.include_router(runs_router)

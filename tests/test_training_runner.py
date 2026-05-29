@@ -291,6 +291,9 @@ def test_external_adapter_runs_actual_torch_training_on_valid_images(
     assert checkpoint_payload["optimizer_state_dict"]
     log_text = (run_dir / "train.log").read_text(encoding="utf-8")
     assert "device=" in log_text
+    assert "epoch 1:" in log_text
+    assert "elapsed_sec=" in log_text
+    assert "total_elapsed_sec=" in log_text
 
 
 def test_stop_run_marks_async_run_as_stopped(tmp_path: Path, monkeypatch) -> None:

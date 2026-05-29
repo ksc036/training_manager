@@ -4,6 +4,7 @@ import json
 import shutil
 import signal
 import sys
+import time
 from pathlib import Path
 
 from app.services.datasets import DatasetRegistryService
@@ -258,8 +259,10 @@ def _run_actual_training(run_dir: Path) -> None:
         writer.writeheader()
         best_dice = -1.0
         best_epoch = 0
+        training_started_at = time.perf_counter()
 
         for epoch in range(1, epochs + 1):
+            epoch_started_at = time.perf_counter()
             if _STOP_REQUESTED:
                 with log_path.open("a", encoding="utf-8") as log_handle:
                     log_handle.write("training stopped\n")
@@ -345,8 +348,13 @@ def _run_actual_training(run_dir: Path) -> None:
                     },
                 )
             with log_path.open("a", encoding="utf-8") as log_handle:
+                epoch_elapsed_sec = time.perf_counter() - epoch_started_at
+                total_elapsed_sec = time.perf_counter() - training_started_at
                 log_handle.write(
-                    f"epoch {epoch}: train_loss={train_loss:.4f} val_loss={val_loss:.4f} dice={dice:.4f}\n"
+                    "epoch "
+                    f"{epoch}: train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
+                    f"dice={dice:.4f} elapsed_sec={epoch_elapsed_sec:.4f} "
+                    f"total_elapsed_sec={total_elapsed_sec:.4f}\n"
                 )
 
     _persist_status(run_dir, "completed")
