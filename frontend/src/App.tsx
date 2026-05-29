@@ -549,7 +549,7 @@ function TrainPage() {
               <span>Learning rate</span>
               <input
                 type="number"
-                min={0.000001}
+                min={0}
                 step={0.0001}
                 value={learningRate}
                 onChange={(event) => setLearningRate(Number(event.target.value))}
